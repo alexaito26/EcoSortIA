@@ -1,18 +1,16 @@
 /**
- * EcoSort AI - Simulador de dispositivo (STUB).
- *
- * La implementacion real se hace en la Fase 4: generara eventos de
- * clasificacion, ruteo y heartbeats validados con los esquemas Zod de
- * `@ecosort/shared` y los enviara a las Edge Functions de Supabase usando
- * SIMULATOR_SUPABASE_URL y SIMULATOR_DEVICE_TOKEN (nunca hardcodeados).
+ * EcoSort AI - Simulador de dispositivo (punto de ayuda).
+ * La logica real esta en cli.ts. Ejecuta los comandos desde la raiz:
+ *   pnpm simulator:event | simulator:heartbeat | simulator:stream
+ *   pnpm simulator:error | simulator:duplicate
  */
-import { EVENT_TYPES, deviceEventSchema } from "@ecosort/shared";
+import { DEVICE_EVENT_TYPES } from "@ecosort/shared";
 
 function main(): void {
-  console.log("EcoSort AI device-simulator - stub (Fase 4)");
-  console.log(`Tipos de evento disponibles: ${EVENT_TYPES.join(", ")}`);
-  // En Fase 4: construir y validar eventos con deviceEventSchema antes de enviarlos.
-  void deviceEventSchema;
+  console.log("EcoSort AI device-simulator (Fase 4)");
+  console.log("Comandos: event | heartbeat | stream | error | duplicate");
+  console.log(`Tipos de evento: ${DEVICE_EVENT_TYPES.join(", ")}`);
+  console.log("Config: ECOSORT_API_BASE_URL, ECOSORT_DEVICE_CODE, ECOSORT_DEVICE_TOKEN");
 }
 
 main();

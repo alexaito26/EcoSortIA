@@ -4,12 +4,18 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "tsx src/index.ts",
-    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/cli.ts",
+    "dev": "tsx src/index.ts",
+    "event": "tsx src/cli.ts event",
+    "heartbeat": "tsx src/cli.ts heartbeat",
+    "stream": "tsx src/cli.ts stream",
+    "error": "tsx src/cli.ts error",
+    "duplicate": "tsx src/cli.ts duplicate",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@ecosort/shared": "workspace:*",
+    "dotenv": "^16.4.7",
     "zod": "^4.0.0"
   },
   "devDependencies": {

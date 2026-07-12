@@ -8,6 +8,7 @@ import {
   CONTAINER_LEVEL_VARIANTS,
   DEVICE_STATUS_LABELS,
   DEVICE_STATUS_VARIANTS,
+  effectiveDeviceStatus,
   formatPercent,
   formatRelative,
 } from "@/lib/format";
@@ -53,6 +54,7 @@ export default async function DevicesPage() {
         <div className="grid gap-4 lg:grid-cols-2">
           {devices.map((device) => {
             const deviceContainers = containers.filter((c) => c.device_id === device.id);
+            const status = effectiveDeviceStatus(device.status, device.last_seen_at);
             return (
               <Card key={device.id}>
                 <CardHeader>
@@ -66,8 +68,8 @@ export default async function DevicesPage() {
                         <p className="text-xs text-muted-foreground">{device.code}</p>
                       </div>
                     </div>
-                    <Badge variant={DEVICE_STATUS_VARIANTS[device.status]}>
-                      {DEVICE_STATUS_LABELS[device.status]}
+                    <Badge variant={DEVICE_STATUS_VARIANTS[status]}>
+                      {DEVICE_STATUS_LABELS[status]}
                     </Badge>
                   </div>
                 </CardHeader>

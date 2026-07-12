@@ -8,6 +8,7 @@ import {
   CATEGORY_LABELS,
   CONTAINER_LEVEL_LABELS,
   CONTAINER_LEVEL_VARIANTS,
+  effectiveDeviceStatus,
   formatConfidence,
   formatDateTime,
   formatPercent,
@@ -68,7 +69,7 @@ export default async function DashboardPage() {
 
   const classifications = (classificationsRes.data ?? []) as ClassificationRow[];
   const routing = (routingRes.data ?? []) as Pick<RoutingEventRow, "success">[];
-  const devices = (devicesRes.data ?? []) as Pick<DeviceRow, "status">[];
+  const devices = (devicesRes.data ?? []) as Pick<DeviceRow, "status" | "last_seen_at">[];
   const containers = (containersRes.data ?? []) as ContainerRow[];
 
   const totalClassifications = classifications.length;
@@ -85,7 +86,9 @@ export default async function DashboardPage() {
   const routingOk = routing.filter((r) => r.success).length;
   const routingRate = routingTotal > 0 ? (routingOk / routingTotal) * 100 : 0;
 
-  const onlineDevices = devices.filter((d) => d.status === "online").length;
+  const onlineDevices = devices.filter(
+    (d) => effectiveDeviceStatus(d.status, d.last_seen_at) === "online",
+  ).length;
   const ecoPointsTotal = classifications.reduce((acc, c) => acc + (c.eco_points_awarded ?? 0), 0);
   const containersFull = containers.filter((c) => c.level === "full").length;
 
