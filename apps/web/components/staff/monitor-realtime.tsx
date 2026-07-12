@@ -11,6 +11,7 @@ import {
   CONTAINER_LEVEL_VARIANTS,
   DEVICE_STATUS_LABELS,
   DEVICE_STATUS_VARIANTS,
+  effectiveDeviceStatus,
   formatConfidence,
   formatDateTime,
   formatPercent,
@@ -137,22 +138,25 @@ export function MonitorRealtime({
             {devices.length === 0 ? (
               <p className="text-sm text-muted-foreground">Sin dispositivos.</p>
             ) : (
-              devices.map((device) => (
-                <div
-                  key={device.id}
-                  className="flex items-center justify-between rounded-lg border border-border p-3"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate font-medium">{device.name ?? device.code}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {device.code} - visto {formatRelative(device.last_seen_at)}
-                    </p>
+              devices.map((device) => {
+                const status = effectiveDeviceStatus(device.status, device.last_seen_at);
+                return (
+                  <div
+                    key={device.id}
+                    className="flex items-center justify-between rounded-lg border border-border p-3"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate font-medium">{device.name ?? device.code}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {device.code} - visto {formatRelative(device.last_seen_at)}
+                      </p>
+                    </div>
+                    <Badge variant={DEVICE_STATUS_VARIANTS[status]}>
+                      {DEVICE_STATUS_LABELS[status]}
+                    </Badge>
                   </div>
-                  <Badge variant={DEVICE_STATUS_VARIANTS[device.status]}>
-                    {DEVICE_STATUS_LABELS[device.status]}
-                  </Badge>
-                </div>
-              ))
+                );
+              })
             )}
           </CardContent>
         </Card>

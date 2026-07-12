@@ -1,10 +1,11 @@
-import type {
-  ContainerLevel,
-  DeviceStatus,
-  LogLevel,
-  LogSource,
-  UserRole,
-  WasteCategory,
+import {
+  OFFLINE_THRESHOLD_SECONDS,
+  type ContainerLevel,
+  type DeviceStatus,
+  type LogLevel,
+  type LogSource,
+  type UserRole,
+  type WasteCategory,
 } from "@ecosort/shared";
 
 type BadgeVariant =
@@ -147,4 +148,19 @@ export function formatPercent(value: number | null | undefined): string {
 export function formatConfidence(value: number | null | undefined): string {
   if (value === null || value === undefined) return "-";
   return `${Math.round(value * 100)}%`;
+}
+
+/**
+ * Estado efectivo del dispositivo: si no hay latido reciente se considera
+ * offline aunque el registro diga 'online'. Respeta estados manuales
+ * (maintenance/error). Umbral: OFFLINE_THRESHOLD_SECONDS (90 s).
+ */
+export function effectiveDeviceStatus(
+  status: DeviceStatus,
+  lastSeenAt: string | null | undefined,
+): DeviceStatus {
+  if (status === "maintenance" || status === "error") return status;
+  if (!lastSeenAt) return "offline";
+  const ageSeconds = (Date.now() - new Date(lastSeenAt).getTime()) / 1000;
+  return ageSeconds > OFFLINE_THRESHOLD_SECONDS ? "offline" : "online";
 }

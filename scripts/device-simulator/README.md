@@ -1,16 +1,27 @@
 # Device Simulator - EcoSort AI
 
-Simulador Node.js que emula un ESP32 enviando eventos al backend.
+Simulador Node.js/TypeScript que emula el ESP32 de control enviando eventos y
+latidos a las Edge Functions de Supabase.
 
-> Estado: **stub**. Implementacion completa en la **Fase 4**.
+## Configuracion
 
-## Uso (Fase 4)
+Variables de entorno (usa un `.env` local, nunca en Git):
 
-```bash
-# Requiere variables de entorno (ver .env.example en la raiz):
-#   SIMULATOR_SUPABASE_URL, SIMULATOR_DEVICE_TOKEN
-pnpm --filter @ecosort/device-simulator start
+```
+ECOSORT_API_BASE_URL=https://<project-ref>.supabase.co/functions/v1
+ECOSORT_DEVICE_CODE=ECOSORT-01
+ECOSORT_DEVICE_TOKEN=<token generado con: pnpm token:generate>
+ECOSORT_ANON_KEY=<clave publishable/anon, si el gateway la exige>
 ```
 
-Los eventos se validan con los esquemas Zod de `@ecosort/shared` y respetan
-la idempotencia por `event_id`.
+## Comandos
+
+```bash
+pnpm simulator:event        # una clasificacion
+pnpm simulator:heartbeat    # un latido
+pnpm simulator:stream       # latidos + clasificaciones periodicas
+pnpm simulator:error        # routing/sensor/system error (--kind)
+pnpm simulator:duplicate    # mismo event_id dos veces (idempotencia)
+```
+
+Documentacion completa: `docs/device-simulator.md` y `docs/api-contract.md`.
