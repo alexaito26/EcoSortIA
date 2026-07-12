@@ -46,6 +46,44 @@ insert into auth.identities (
   'email', now(), now(), now()
 ) on conflict do nothing;
 
+-- ------------------- Usuario admin (dev-only, rol admin) ------------
+-- El trigger handle_new_user crea el perfil con rol 'user'; luego se
+-- eleva a 'admin' via UPDATE (permitido en contexto de servidor porque
+-- auth.uid() es null; ver prevent_role_change en 0002).
+insert into auth.users (
+  instance_id, id, aud, role, email, encrypted_password,
+  email_confirmed_at, created_at, updated_at,
+  raw_app_meta_data, raw_user_meta_data, is_super_admin,
+  confirmation_token, recovery_token, email_change,
+  email_change_token_new, email_change_token_current,
+  phone_change, phone_change_token, reauthentication_token
+) values (
+  '00000000-0000-0000-0000-000000000000',
+  'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+  'authenticated', 'authenticated', 'admin@ejemplo.com',
+  extensions.crypt('EcoSortAdmin123!', extensions.gen_salt('bf')),
+  now(), now(), now(),
+  '{"provider":"email","providers":["email"]}'::jsonb,
+  '{"full_name":"Administrador Demo"}'::jsonb,
+  false,
+  '', '', '', '', '', '', '', ''
+) on conflict (id) do nothing;
+
+insert into auth.identities (
+  id, user_id, provider_id, identity_data, provider,
+  last_sign_in_at, created_at, updated_at
+) values (
+  extensions.gen_random_uuid(),
+  'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+  'admin@ejemplo.com',
+  '{"sub":"aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa","email":"admin@ejemplo.com","email_verified":true}'::jsonb,
+  'email', now(), now(), now()
+) on conflict do nothing;
+
+update public.profiles
+  set role = 'admin', full_name = 'Administrador Demo'
+  where id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+
 -- --------------------------- Dispositivo ----------------------------
 insert into public.devices (id, code, name, location, status, firmware_version, last_seen_at)
 values (
