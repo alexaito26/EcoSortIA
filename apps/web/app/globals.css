@@ -121,8 +121,15 @@
     border-color: var(--border);
     outline-color: color-mix(in oklch, var(--ring) 50%, transparent);
   }
+  html {
+    /* Evita que iOS reescale el texto al girar el dispositivo. */
+    -webkit-text-size-adjust: 100%;
+  }
   body {
     background-color: var(--background);
     color: var(--foreground);
+    /* Mobile-first: sin destello gris al tocar y sin rebote horizontal. */
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior-x: none;
   }
 }

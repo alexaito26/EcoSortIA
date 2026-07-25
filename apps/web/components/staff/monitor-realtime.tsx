@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { Wifi, WifiOff, RefreshCw } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -43,7 +44,21 @@ export function MonitorRealtime({
   const [containers, setContainers] = useState(initialContainers);
   const [feed, setFeed] = useState(initialClassifications);
   const [status, setStatus] = useState<ConnStatus>("connecting");
+  // Al incrementarse fuerza recrear el canal (reconexion tras volver online).
+  const [reconnectNonce, setReconnectNonce] = useState(0);
   const channelRef = useRef<RealtimeChannel | null>(null);
+  const router = useRouter();
+
+  // Tras un router.refresh() el servidor manda datos frescos: son la fuente
+  // autoritativa y reemplazan lo acumulado por Realtime. Se ajusta durante el
+  // render (no en un efecto) para evitar un repintado con datos viejos.
+  const [syncedSnapshot, setSyncedSnapshot] = useState(initialClassifications);
+  if (syncedSnapshot !== initialClassifications) {
+    setSyncedSnapshot(initialClassifications);
+    setDevices(initialDevices);
+    setContainers(initialContainers);
+    setFeed(initialClassifications);
+  }
 
   useEffect(() => {
     const supabase = createClient();
@@ -95,7 +110,16 @@ export function MonitorRealtime({
     channelRef.current = channel;
 
     const handleOffline = () => setStatus("offline");
-    const handleOnline = () => setStatus("reconnecting");
+
+    // Al recuperar la red no basta con cambiar el rotulo: el socket puede haber
+    // quedado muerto. Recreamos el canal y pedimos datos frescos al servidor
+    // para no perder los eventos ocurridos mientras no habia conexion.
+    const handleOnline = () => {
+      setStatus("reconnecting");
+      router.refresh();
+      setReconnectNonce((n) => n + 1);
+    };
+
     window.addEventListener("offline", handleOffline);
     window.addEventListener("online", handleOnline);
 
@@ -104,7 +128,7 @@ export function MonitorRealtime({
       window.removeEventListener("online", handleOnline);
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [reconnectNonce, router]);
 
   const meta = STATUS_META[status];
   const StatusIcon = status === "live" ? Wifi : status === "offline" ? WifiOff : RefreshCw;
