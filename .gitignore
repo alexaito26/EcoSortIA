@@ -42,6 +42,9 @@ firmware/**/.pio/
 firmware/**/.pioenvs/
 firmware/**/.piolibdeps/
 
+# Credenciales del dispositivo (WiFi, token). Solo se versiona la plantilla.
+firmware/**/include/secrets.h
+
 # Coverage / tests
 coverage/
 .vitest/

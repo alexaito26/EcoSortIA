@@ -10,7 +10,7 @@ ecosort-ai/
   apps/web/                 Aplicacion Next.js (App Router) + PWA mobile-first
   packages/shared/          Tipos y esquemas Zod compartidos (@ecosort/shared)
   supabase/                 Migraciones, Edge Functions y seed (PostgreSQL + Auth + RLS)
-  firmware/esp32-control/   Firmware PlatformIO para el ESP32 (Fase 6)
+  firmware/esp32-control/   Firmware PlatformIO del ESP32-S3 (Fase 6)
   scripts/device-simulator/ Simulador Node.js de eventos de dispositivo (Fase 4)
   docs/                     Documentacion del proyecto
 ```
@@ -48,12 +48,12 @@ pnpm dev
 
 ## Fases del proyecto
 
-1. Bootstrap del monorepo (esta fase)
+1. Bootstrap del monorepo
 2. Supabase y autenticacion
 3. Aplicacion funcional (dashboard, monitor, historial, etc.)
 4. Backend IoT (Edge Functions + simulador)
 5. PWA (manifest, service worker, offline, instalacion Android/iOS)
-6. Firmware ESP32
-7. Despliegue en Vercel
+6. Firmware ESP32-S3 (ver [`docs/firmware.md`](./docs/firmware.md))
+7. Despliegue en Vercel (pendiente)
 
 Ver [`docs/`](./docs) para mas detalle.

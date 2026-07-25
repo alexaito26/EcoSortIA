@@ -33,5 +33,5 @@ Dispositivo ESP32  --HTTPS-->  Supabase Edge Functions  -->  PostgreSQL (RLS)
 
 ## Estado por fase
 
-Ver el listado de fases en el [README raiz](../README.md). Esta base corresponde
-a la Fase 1 (bootstrap del monorepo).
+Ver el listado de fases en el [README raiz](../README.md). Completadas las fases
+1 a 6; queda la Fase 7 (despliegue en Vercel).
