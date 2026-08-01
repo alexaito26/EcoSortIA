@@ -52,8 +52,23 @@ Para agilizar pruebas se puede desactivar temporalmente la confirmacion de
 correo en Supabase (Authentication > Providers > Email > "Confirm email").
 El codigo sigue soportando el flujo con confirmacion activada.
 
+## Redirects en produccion (Supabase Auth)
+
+Obligatorio cuando la web vive en Vercel. En el dashboard de Supabase →
+Authentication → URL Configuration:
+
+1. **Site URL**: `https://ecosort-ai-pi.vercel.app`
+2. **Redirect URLs**:
+   - `https://ecosort-ai-pi.vercel.app/**`
+   - `https://ecosort-ai-*-alexaito26s-projects.vercel.app/**` (previews)
+   - `http://localhost:3000/**` (desarrollo)
+
+Sin esto, recuperacion de contraseña y verificacion de correo fallan al volver
+del email. Detalle en [deployment.md](./deployment.md).
+
 ## Seguridad
 
 - El campo `role` nunca se acepta desde formularios (los esquemas Zod lo ignoran).
 - La autorizacion real recae en RLS.
 - `service_role` nunca se usa en el cliente.
+- No hardcodear project-ref, tokens ni service_role en el codigo versionado.

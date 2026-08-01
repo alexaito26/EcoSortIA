@@ -9,7 +9,27 @@ monorepo pnpm + Turborepo.
 |-|-|
 | Produccion | https://ecosort-ai-pi.vercel.app |
 | Proyecto Vercel | `alexaito26s-projects/ecosort-ai` |
+| Repo GitHub | `alexaito26/EcoSortIA` (conectado) |
+| Production branch | `main` |
 | Root Directory | `apps/web` |
+
+## Deploy automatico (Git)
+
+El proyecto esta enlazado a GitHub. No hace falta `vercel deploy` manual:
+
+| Evento | Resultado |
+| ------ | --------- |
+| Push a `main` | Deploy de **produccion** |
+| Pull request / otra rama | Deploy de **preview** |
+
+Comprobar en el dashboard de Vercel → Deployments: el deploy debe mostrar el
+commit de GitHub (sin `actor: cursor-cli`). Si GitHub pide autorizar la app
+Vercel, aceptar el OAuth una vez.
+
+```bash
+# Reconectar (solo si se desliga)
+npx vercel git connect https://github.com/alexaito26/EcoSortIA.git --yes --scope alexaito26s-projects
+```
 
 ## Configuracion del proyecto
 
@@ -21,6 +41,7 @@ monorepo pnpm + Turborepo.
 | Build Command       | `cd ../.. && pnpm --filter web build`              |
 | Node.js             | 24 (ver `.nvmrc` y `engines` del package.json raiz)|
 | Archivo de ajustes  | `apps/web/vercel.json`                             |
+| Archivos fuera del root | Habilitado (`sourceFilesOutsideRootDirectory`) |
 
 El Root Directory apunta a `apps/web`, pero el install/build suben a la raiz
 del monorepo para resolver `@ecosort/shared` via el workspace de pnpm.
@@ -54,26 +75,17 @@ npx vercel env add NEXT_PUBLIC_SITE_URL production
 
 O desde el dashboard: Project → Settings → Environment Variables.
 
-## Primer despliegue
+## Despliegue manual (solo emergencia)
+
+Con Git conectado, el camino normal es `git push`. Si hace falta un deploy
+puntual sin push:
 
 ```bash
-# 1. Login (abre el navegador)
 npx vercel login
-
-# 2. Linkear el monorepo con Root Directory = apps/web
 npx vercel link --yes --project ecosort-ai --scope alexaito26s-projects
-# En el dashboard (o con vercel project), fijar Root Directory = apps/web
-
-# 3. Preview
-npx vercel
-
-# 4. Produccion
-npx vercel --prod
+npx vercel          # preview
+npx vercel --prod   # produccion
 ```
-
-Tras el primer deploy por CLI, conviene conectar el repo de GitHub en el
-dashboard de Vercel para que cada push a `main` publique produccion y cada
-PR genere un preview automatico.
 
 ## Redirects de Supabase Auth
 
@@ -104,9 +116,23 @@ fallan al volver del email porque Supabase rechaza el callback.
 - **Edge Functions IoT** (`supabase/functions/`): viven en Supabase.
 - **Simulador / token scripts** (`scripts/`): uso local o CI propio.
 
-## Seguridad
+## Seguridad (sin hardcode)
 
+- Secretos y URLs de proyecto solo en env (Vercel / `.env.local` / `secrets.h`
+  local). Nunca `project-ref`, service_role ni device tokens en el codigo
+  versionado.
 - Nunca subir `.env.local` ni `SUPABASE_SERVICE_ROLE_KEY` a Vercel como
   `NEXT_PUBLIC_*`.
 - Las unicas claves del runtime web son la URL y la clave publishable/anon.
 - El token de dispositivo y el service_role se quedan fuera de este despliegue.
+
+## Datos del dashboard: seed vs vivo
+
+Ver el checklist en [iot-backend-test-plan.md](./iot-backend-test-plan.md)
+(seccion "Seed vs simulador vs firmware"). Resumen:
+
+| Fuente | `event_id` | Hardware |
+| ------ | ---------- | -------- |
+| Seed SQL | UUID fijos `88888888-…` | No |
+| Simulador Node | `evt-…` | No (HTTP real a Edge Functions) |
+| Firmware ESP32 | `evt-<bootId>-…` | Si, cuando esta flasheado |

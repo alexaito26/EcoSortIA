@@ -42,6 +42,38 @@ Ejecutar: `pnpm test`.
 - EcoPuntos: trigger idempotente por `classification_id`, sin duplicados en
   reintentos.
 
+## Seed vs simulador vs firmware
+
+El panel **siempre lee Supabase de verdad**. Lo que cambia es el origen de las
+filas. Usa esta tabla para no confundir demo con ingest:
+
+| Origen | Como se genera | Huella en la BD | Hardware |
+| ------ | -------------- | --------------- | -------- |
+| Seed (`supabase/seed.sql`) | `supabase db reset` / seed manual | Clasificaciones con ids `44444444-…`, fechas fijas ~julio 2026, `device_events.event_id` tipo `88888888-…` | No |
+| Simulador Node | `pnpm simulator:event` (etc.) | `event_id` empieza por `evt-`, `occurred_at` ≈ ahora, Realtime mueve `/monitor` | No (cliente HTTP) |
+| Firmware ESP32 | Placa flasheada + WiFi + token | Mismo contrato `evt-…`, `last_seen_at` se actualiza sin el PC | Si |
+
+### Checklist en 2 minutos (prueba de vida)
+
+1. Login staff → `/monitor` (badge “En vivo”).
+2. Configurar env del simulador (ver [device-simulator.md](./device-simulator.md)):
+   `ECOSORT_API_BASE_URL`, `ECOSORT_DEVICE_CODE`, `ECOSORT_DEVICE_TOKEN`,
+   `ECOSORT_ANON_KEY` (valores desde tu `.env` / proyecto Supabase; no hardcodear).
+3. Ejecutar: `pnpm simulator:event -- --material glass --confidence 0.9`
+4. Sin recargar la pagina: nueva clasificacion / niveles / `last_seen_at`.
+5. SQL de confirmacion:
+
+```sql
+select event_id, type, occurred_at, created_at
+from public.device_events
+where event_id like 'evt-%'
+order by occurred_at desc
+limit 10;
+```
+
+Si solo ves filas del seed y el simulador no mueve nada, revisa token/env del
+simulador (auth), no la UI.
+
 ## Verificacion en el dashboard
 
 Tras `pnpm simulator:stream`, comprobar sin recargar (Realtime):

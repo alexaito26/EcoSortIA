@@ -11,4 +11,5 @@ Indice de la documentacion del proyecto.
 - [Simulador](./device-simulator.md) - CLI de prueba del backend IoT.
 - [PWA](./pwa.md) - Manifest, service worker, offline e instalacion.
 - [Firmware](./firmware.md) - ESP32-S3 (PlatformIO).
-- [Despliegue](./deployment.md) - Vercel (monorepo, env, redirects).
+- [Despliegue](./deployment.md) - Vercel (Git auto-deploy, env, redirects).
+- [Plan de pruebas IoT](./iot-backend-test-plan.md) - Seed vs simulador vs firmware.
