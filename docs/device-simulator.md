@@ -43,6 +43,8 @@ Los `event_id` se generan unicos (`evt-YYYYMMDD-<uuid8>`).
 
 ```bash
 pnpm simulator:event -- --material glass --confidence 0.9
+# Con EcoPuntos: hace falta el UUID del perfil (sin user-id la clasificacion es anonima)
+pnpm simulator:event -- --material plastic --user-id 11111111-1111-1111-1111-111111111111
 pnpm simulator:stream -- --interval 10 --count 5
 pnpm simulator:error -- --kind sensor
 pnpm simulator:duplicate

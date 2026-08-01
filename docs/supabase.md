@@ -65,24 +65,48 @@ servidor). Un usuario normal no puede promoverse: el trigger
 
 ## Como ejecutar el seed (SOLO desarrollo)
 
-`supabase/seed.sql` contiene datos demo **deterministas e idempotentes**
-(dispositivo `ECOSORT-01`, contenedores, clasificaciones, ruteos, logs y
-EcoPuntos). Puede ejecutarse varias veces sin duplicar informacion.
+`supabase/seed.sql` es un **bootstrap minimo**: cuentas de acceso + dispositivo
+`ECOSORT-01` + contenedores vacios. **No inserta historial** (clasificaciones,
+ruteos, logs, EcoPuntos inventados). El historial debe salir del simulador o
+del firmware.
 
-- **NO debe ejecutarse en produccion.**
-- Con Supabase CLI (entorno local):
+- Preferible solo en local (`supabase db reset`).
+- Para vaciar historial en un proyecto ya usado:
+  `scripts/clear-operational-data.sql`.
 
 ```bash
-supabase db reset          # aplica migraciones + seed en local
-# o solo el seed:
+supabase db reset          # migraciones + seed bootstrap en local
+# o:
 psql "$DATABASE_URL" -f supabase/seed.sql
 ```
 
-- El seed crea un usuario demo `user@ejemplo.com` (rol `user`) unicamente para
-  desarrollo. No es un correo personal ni una credencial de produccion.
+Cuentas de acceso de desarrollo (no son correos personales):
+`user@ejemplo.com` / `admin@ejemplo.com`.
 
 El token del dispositivo `ECOSORT-01` se configura por separado en
 `private.device_secrets` y nunca se versiona.
+
+## EcoPuntos: si sirven (y cuando no)
+
+Si, el sistema es real en base de datos y UI:
+
+1. Al insertar una clasificacion con `user_id` y `eco_points_awarded > 0`, el
+   trigger `award_eco_points` suma en `profiles.eco_points` y escribe en
+   `eco_points_ledger` (idempotente por `classification_id`).
+2. La vista `/home` y la tabla de usuarios muestran ese contador.
+3. En ingest, los puntos solo se otorgan si el payload trae `user_id` **y**
+   `routing_success` es true (`ingest_device_event` en `0006_device_functions.sql`).
+
+Limitacion actual: el dispositivo/simulador debe enviar `user_id` (UUID del
+perfil). Sin eso, la clasificacion queda anonima y **no suma puntos**. El
+simulador lo soporta con `--user-id <uuid>`:
+
+```bash
+pnpm simulator:event -- --material plastic --user-id 11111111-1111-1111-1111-111111111111
+```
+
+Aun no hay flujo de app (QR / sesion en el dispositivo) que enlace al usuario
+logueado automaticamente; eso seria una mejora aparte.
 
 ## Separacion desarrollo / produccion
 

@@ -49,9 +49,12 @@ filas. Usa esta tabla para no confundir demo con ingest:
 
 | Origen | Como se genera | Huella en la BD | Hardware |
 | ------ | -------------- | --------------- | -------- |
-| Seed (`supabase/seed.sql`) | `supabase db reset` / seed manual | Clasificaciones con ids `44444444-…`, fechas fijas ~julio 2026, `device_events.event_id` tipo `88888888-…` | No |
+| Seed (`supabase/seed.sql`) | Solo bootstrap: cuentas + dispositivo + contenedores **vacios**. Sin historial. | Sin clasificaciones de demo | No |
 | Simulador Node | `pnpm simulator:event` (etc.) | `event_id` empieza por `evt-`, `occurred_at` ≈ ahora, Realtime mueve `/monitor` | No (cliente HTTP) |
 | Firmware ESP32 | Placa flasheada + WiFi + token | Mismo contrato `evt-…`, `last_seen_at` se actualiza sin el PC | Si |
+
+Para vaciar historial en un proyecto ya sembrado: ejecutar
+[`scripts/clear-operational-data.sql`](../scripts/clear-operational-data.sql).
 
 ### Checklist en 2 minutos (prueba de vida)
 
