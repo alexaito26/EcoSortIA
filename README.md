@@ -28,11 +28,18 @@ ecosort-ai/
 - Node.js >= 24 (ver `.nvmrc`)
 - pnpm >= 11 (`npm install -g pnpm` o `corepack enable pnpm`)
 
+## Produccion
+
+Web en Vercel: **https://ecosort-ai-pi.vercel.app**
+
+Detalle del despliegue (variables, Root Directory, redirects de Supabase Auth)
+en [`docs/deployment.md`](./docs/deployment.md).
+
 ## Primeros pasos
 
 ```bash
 pnpm install
-cp .env.example apps/web/.env.local   # completar en Fase 2
+cp .env.example apps/web/.env.local
 pnpm dev
 ```
 
@@ -54,6 +61,6 @@ pnpm dev
 4. Backend IoT (Edge Functions + simulador)
 5. PWA (manifest, service worker, offline, instalacion Android/iOS)
 6. Firmware ESP32-S3 (ver [`docs/firmware.md`](./docs/firmware.md))
-7. Despliegue en Vercel (pendiente)
+7. Despliegue en Vercel (ver [`docs/deployment.md`](./docs/deployment.md))
 
 Ver [`docs/`](./docs) para mas detalle.

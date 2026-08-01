@@ -1,0 +1,20 @@
+# No forman parte del build de la web en Vercel.
+# Importante: los patrones sin "/" inicial coinciden en CUALQUIER nivel
+# (p. ej. "supabase/" tambien excluía apps/web/lib/supabase/).
+
+/firmware/
+/docs/
+/scripts/
+/supabase/
+/assets/
+/.github/
+/coverage/
+
+.git/
+.turbo/
+**/.pio/
+**/.pioenvs/
+**/test/
+**/tests/
+**/*.test.ts
+**/*.test.tsx

@@ -34,4 +34,4 @@ Dispositivo ESP32  --HTTPS-->  Supabase Edge Functions  -->  PostgreSQL (RLS)
 ## Estado por fase
 
 Ver el listado de fases en el [README raiz](../README.md). Completadas las fases
-1 a 6; queda la Fase 7 (despliegue en Vercel).
+1 a 7. El despliegue de la web se documenta en [deployment.md](./deployment.md).

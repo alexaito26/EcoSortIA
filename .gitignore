@@ -49,5 +49,5 @@ firmware/**/include/secrets.h
 coverage/
 .vitest/
 
-# Vercel
+# Vercel (el CLI crea .vercel/ al linkear; no versionar)
 .vercel/

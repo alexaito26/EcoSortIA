@@ -45,3 +45,9 @@ pnpm format      # formateo con Prettier
 ```bash
 pnpm --filter web dev
 ```
+
+## Despliegue
+
+La web se publica en Vercel. Detalle completo (Root Directory, variables,
+redirects de Supabase Auth y checklist post-despliegue) en
+[deployment.md](./deployment.md).

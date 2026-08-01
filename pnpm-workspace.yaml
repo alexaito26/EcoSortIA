@@ -3,11 +3,9 @@ packages:
   - "packages/*"
   - "scripts/*"
 
+# pnpm 11 en Vercel: hay que autorizar explicitamente los postinstall.
+# Sin esto el install falla con ERR_PNPM_IGNORED_BUILDS.
 allowBuilds:
-  esbuild: set this to true or false
-  sharp: set this to true or false
-  unrs-resolver: set this to true or false
-
-ignoredBuiltDependencies:
-  - sharp
-  - unrs-resolver
+  esbuild: true
+  sharp: true
+  unrs-resolver: true
