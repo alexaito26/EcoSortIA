@@ -19,8 +19,9 @@ El proyecto esta enlazado a GitHub. No hace falta `vercel deploy` manual:
 
 | Evento | Resultado |
 | ------ | --------- |
-| Push a `main` | Deploy de **produccion** |
+| Push a `main` que afecta `apps/web` (o deps del workspace) | Deploy de **produccion** |
 | Pull request / otra rama | Deploy de **preview** |
+| Push solo a `docs/`, `firmware/`, etc. | Puede **no** disparar build (Root Directory = `apps/web`) |
 
 Comprobar en el dashboard de Vercel → Deployments: el deploy debe mostrar el
 commit de GitHub (sin `actor: cursor-cli`). Si GitHub pide autorizar la app
