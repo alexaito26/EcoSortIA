@@ -1,4 +1,12 @@
-import "dotenv/config";
+import { config as loadEnv } from "dotenv";
+import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const packageDir = fileURLToPath(new URL("..", import.meta.url));
+const repoRoot = resolve(packageDir, "../..");
+loadEnv({ path: resolve(repoRoot, ".env") });
+loadEnv({ path: resolve(repoRoot, ".env.local") });
+loadEnv();
 
 export type SimConfig = {
   baseUrl: string;

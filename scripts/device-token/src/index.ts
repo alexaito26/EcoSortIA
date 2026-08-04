@@ -12,7 +12,15 @@
  *   pnpm --filter @ecosort/device-token start -- --code ECOSORT-01
  */
 import { createClient } from "@supabase/supabase-js";
-import "dotenv/config";
+import { config as loadEnv } from "dotenv";
+import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const packageDir = fileURLToPath(new URL("..", import.meta.url));
+const repoRoot = resolve(packageDir, "../..");
+loadEnv({ path: resolve(repoRoot, ".env") });
+loadEnv({ path: resolve(repoRoot, ".env.local") });
+loadEnv();
 
 function arg(name: string, fallback?: string): string | undefined {
   const idx = process.argv.indexOf(`--${name}`);
