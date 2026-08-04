@@ -1,35 +1,14 @@
 {
-  "name": "ecosort-ai",
-  "version": "0.1.0",
-  "private": true,
+  "name": "ecosort-ai", "version": "0.1.0", "private": true,
   "description": "EcoSort AI - Monorepo Full-Stack + IoT para clasificacion inteligente de residuos",
-  "packageManager": "pnpm@11.11.0",
-  "engines": {
-    "node": ">=24"
-  },
+  "packageManager": "pnpm@11.11.0", "engines": { "node": ">=24" },
   "scripts": {
-    "dev": "turbo run dev",
-    "build": "turbo run build",
-    "lint": "turbo run lint",
-    "typecheck": "turbo run typecheck",
-    "test": "turbo run test",
-    "clean": "turbo run clean",
+    "dev": "turbo run dev", "build": "turbo run build", "lint": "turbo run lint", "typecheck": "turbo run typecheck", "test": "turbo run test", "clean": "turbo run clean",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\" --ignore-path .gitignore",
-    "simulator:event": "pnpm --filter @ecosort/device-simulator exec tsx src/cli.ts event",
-    "simulator:heartbeat": "pnpm --filter @ecosort/device-simulator exec tsx src/cli.ts heartbeat",
-    "simulator:stream": "pnpm --filter @ecosort/device-simulator exec tsx src/cli.ts stream",
-    "simulator:error": "pnpm --filter @ecosort/device-simulator exec tsx src/cli.ts error",
-    "simulator:duplicate": "pnpm --filter @ecosort/device-simulator exec tsx src/cli.ts duplicate",
-    "token:generate": "pnpm --filter @ecosort/device-token exec tsx src/index.ts",
-    "icons:generate": "node scripts/generate-pwa-icons.mjs"
+    "simulator:event": "pnpm --filter @ecosort/device-simulator exec tsx src/cli.ts event", "simulator:heartbeat": "pnpm --filter @ecosort/device-simulator exec tsx src/cli.ts heartbeat", "simulator:stream": "pnpm --filter @ecosort/device-simulator exec tsx src/cli.ts stream", "simulator:error": "pnpm --filter @ecosort/device-simulator exec tsx src/cli.ts error", "simulator:duplicate": "pnpm --filter @ecosort/device-simulator exec tsx src/cli.ts duplicate",
+    "simulate:image": "pnpm exec tsx scripts/simulate-image-analysis.ts", "simulate:plastic-unclaimed": "pnpm simulate:image", "simulate:glass-unclaimed": "pnpm simulate:image", "simulate:reject": "pnpm simulate:image", "simulate:duplicate-event": "pnpm exec tsx scripts/simulate-duplicate-image-analysis.ts",
+    "token:generate": "pnpm --filter @ecosort/device-token exec tsx src/index.ts", "icons:generate": "node scripts/generate-pwa-icons.mjs"
   },
-  "devDependencies": {
-    "prettier": "^3.4.2",
-    "sharp": "^0.35.3",
-    "turbo": "^2.5.0",
-    "typescript": "^5.7.3"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": ["esbuild", "sharp", "unrs-resolver"]
-  }
+  "devDependencies": { "prettier": "^3.4.2", "sharp": "^0.35.3", "turbo": "^2.5.0", "typescript": "^5.7.3" },
+  "pnpm": { "onlyBuiltDependencies": ["esbuild", "sharp", "unrs-resolver"] }
 }
