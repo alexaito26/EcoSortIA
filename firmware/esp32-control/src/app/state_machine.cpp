@@ -111,7 +111,10 @@ void StateMachine::loop() {
 
 void StateMachine::handleVisionResult(const VisionResult& result) {
   pending_ = result;
-  routedBelowThreshold_ = result.confidence < VISION_MIN_CONFIDENCE;
+  routedBelowThreshold_ =
+      result.confidence < VISION_MIN_CONFIDENCE ||
+      result.material == Material::Unknown ||
+      result.material == Material::Reject;
 
   // Baja confianza o material desconocido -> rechazo. Preferimos mandar un
   // reciclable a rechazo antes que contaminar un contenedor limpio.
