@@ -25,7 +25,10 @@ Deno.serve(async (req) => {
     ? body.event_id
     : null;
 
-  const query = auth.supabase.from('screen_events').select(FIELDS).eq('device_id', auth.deviceId);
+  const query = auth.supabase
+    .from('screen_events')
+    .select(FIELDS)
+    .eq('screen_device_id', auth.deviceId);
   const { data, error: queryError } = eventId
     ? await query.eq('id', eventId).maybeSingle()
     : await query.eq('screen_status', 'pending').order('created_at', { ascending: true }).limit(1).maybeSingle();
