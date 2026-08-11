@@ -29,23 +29,26 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return error("METHOD_NOT_ALLOWED", 405);
   const authHeader = req.headers.get("authorization");
   const url = Deno.env.get("ECOSORT_SUPABASE_URL") ?? Deno.env.get("SUPABASE_URL");
-  const anonKey = Deno.env.get("ECOSORT_SUPABASE_ANON_KEY") ??
-    Deno.env.get("SUPABASE_ANON_KEY") ??
-    readDefaultKey("SUPABASE_PUBLISHABLE_KEYS");
   const serviceRoleKey = Deno.env.get("ECOSORT_SERVICE_ROLE_KEY") ??
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ??
     readDefaultKey("SUPABASE_SECRET_KEYS");
   if (!authHeader) return error("UNAUTHORIZED", 401);
-  if (!url || !anonKey || !serviceRoleKey) return error("CLAIM_NOT_CONFIGURED", 500);
+  if (!url || !serviceRoleKey) return error("CLAIM_NOT_CONFIGURED", 500);
   let body: { token?: unknown };
   try { body = await req.json(); } catch { return error("INVALID_JSON", 400); }
   if (typeof body.token !== "string" || body.token.length < 24 || body.token.length > 256) return error("QR_INVALID", 400);
 
-  const userClient = createClient(url, anonKey, { global: { headers: { authorization: authHeader } }, auth: { persistSession: false } });
-  const { data: { user }, error: userError } = await userClient.auth.getUser();
-  if (userError || !user) return error("UNAUTHORIZED", 401);
-
   const admin = createClient(url, serviceRoleKey, { auth: { persistSession: false } });
+  const bearerToken = authHeader.replace(/^Bearer\s+/i, "").trim();
+  const { data: { user }, error: userError } = await admin.auth.getUser(bearerToken);
+  if (userError || !user) {
+    console.error(JSON.stringify({
+      source: "claim-auth",
+      error: userError?.message ?? "USER_NOT_FOUND",
+    }));
+    return error("UNAUTHORIZED", 401);
+  }
+
   const { data, error: rpcError } = await admin.rpc("claim_eco_points", { p_token_hash: await sha256(body.token), p_user_id: user.id });
   if (rpcError) return error("CLAIM_FAILED", 500);
   if (!data?.success) {
