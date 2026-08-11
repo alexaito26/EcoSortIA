@@ -142,7 +142,7 @@ async function analyzeWithOpenAI(
             {
               type: "input_image",
               image_url: imageUrl,
-              detail: "low",
+              detail: "high",
             },
           ],
         },
