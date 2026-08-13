@@ -5,6 +5,29 @@ const EVENT_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f-]{27}$/i;
 const FIELDS =
   'id, state, waste_type, points, qr_content, rejection_reason, claim_status, screen_status, expires_at, created_at';
 
+async function loadContainerLevels(
+  supabase: ReturnType<typeof import('npm:@supabase/supabase-js@2').createClient>,
+  screenDeviceId: string,
+) {
+  const { data: linkedDevices, error: devicesError } = await supabase
+    .from('devices')
+    .select('id')
+    .eq('screen_device_id', screenDeviceId);
+  if (devicesError) return { data: null, error: devicesError };
+
+  const deviceIds = [
+    screenDeviceId,
+    ...(linkedDevices ?? []).map((device) => device.id as string),
+  ];
+
+  const { data, error } = await supabase
+    .from('containers')
+    .select('category, level, fill_percent, updated_at')
+    .in('device_id', deviceIds)
+    .in('category', ['plastic', 'glass', 'reject']);
+  return { data, error };
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   if (req.method !== 'POST') return error('METHOD_NOT_ALLOWED', 405);
@@ -25,6 +48,10 @@ Deno.serve(async (req) => {
     ? body.event_id
     : null;
 
+  const containersResult = await loadContainerLevels(auth.supabase, auth.deviceId);
+  if (containersResult.error) return error('SCREEN_QUERY_FAILED', 500);
+  const containerLevels = containersResult.data ?? [];
+
   const query = auth.supabase
     .from('screen_events')
     .select(FIELDS)
@@ -33,7 +60,7 @@ Deno.serve(async (req) => {
     ? await query.eq('id', eventId).maybeSingle()
     : await query.eq('screen_status', 'pending').order('created_at', { ascending: true }).limit(1).maybeSingle();
   if (queryError) return error('SCREEN_QUERY_FAILED', 500);
-  if (!data) return json({ has_event: false });
+  if (!data) return json({ has_event: false, container_levels: containerLevels });
   let event = data as Record<string, unknown>;
 
   if (
@@ -54,5 +81,5 @@ Deno.serve(async (req) => {
   }
 
   if (event.claim_status !== 'unclaimed') event.qr_content = null;
-  return json({ has_event: true, event });
+  return json({ has_event: true, event, container_levels: containerLevels });
 });
